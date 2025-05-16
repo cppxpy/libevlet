@@ -1,4 +1,4 @@
-# libevlet : Integrating boost.fiber with libev, libuv, and boost asio
+# libevtlet : Integrating boost.fiber with libev, libuv, and boost asio
 
 inspired by greenlet and Gevent modules for Python platforms.
 
