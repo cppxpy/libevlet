@@ -1,3 +1,13 @@
+*~
+.#*
+*#
+*.bak
+*.log
+*.orig
+*.rej
+/build
+
+## github C++ .gitignore template
 # Prerequisites
 *.d
 
