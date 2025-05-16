@@ -24,7 +24,7 @@ CMake
 
 ## Project Dependencies
 
-See also: [boost libraries][boost-lib]
+version sync for boost: [boost libraries][boost-lib]
 
 - [boost.fiber][boost.fiber-src]
 - Conditional Dependencies
@@ -41,14 +41,14 @@ See also: [boost libraries][boost-lib]
 [boost.fiber-src]: https://github.com/boostorg/fiber
 [boost.context]: https://live.boost.org/doc/libs/1_88_0/libs/context/doc/html/index.html
 [boost.asio]: https://www.boost.org/doc/libs/1_88_0/doc/html/boost_asio.html
-[boost.intrusive]: https://www.boost.org/doc/libs/1_80_0/doc/html/intrusive.html
+[boost.intrusive]: https://www.boost.org/doc/libs/1_88_0/doc/html/intrusive.html
 [libev]: https://metacpan.org/dist/EV/view/libev/ev.pod
 [libev-src]: https://software.schmorp.de/pkg/libev.html
 [libuv]: https://libuv.org/
 [libuv-src]: https://github.com/libuv/libuv
 [uvw]: https://github.com/skypjack/uvw
 [spdlog2]: https://github.com/gabime/spdlog/tree/v2.x
-[greenlet]: https://github.com/python-greenlet/greenlet
+[greenlet]: https://greenlet.readthedocs.io/en/latest/
 [gevent]: https://www.gevent.org/
 [catch2-src]: https://github.com/catchorg/Catch2/
 [fiber-notes]: https://andydunstall.medium.com/boost-fibers-7c262bb3057d
