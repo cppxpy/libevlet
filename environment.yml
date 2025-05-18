@@ -1,0 +1,36 @@
+#
+# usage:
+# $ conda env create --file <THIS_FILE> [-p <DEST_DIR>]
+# subsq
+# $ conda-env update --file <THIS_FILE> [-p <DEST_DIR>] ...
+# 
+
+name: libevtlet
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  # - cmake
+  - conda-forge/label/python_debug::python>=3.12, <3.13
+  - python=3.12
+  - libev
+  - libuv
+  - boost
+  - gcc>=14
+  - gxx>=14
+  - clangdev>=19
+  - clangxx>=19
+  ## compiler-rt provides llvm asan support
+  - compiler-rt>=19
+  ## note LLVMSupport library (static) as libLLVMSupport.a
+  # - llvmdev>=19
+  # - libcxx>=19
+  # - libcxxabi>=19
+  - catch2
+  - pybind11
+  - gevent
+  - pyzmq
+  - ipython
+  - pdm
+# pip:
+# - ...

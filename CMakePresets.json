@@ -1,0 +1,233 @@
+{
+    "version": 2,
+    "cmakeMinimumRequired": {
+        "major": 3,
+        "minor": 14,
+        "patch": 0
+    },
+    "configurePresets": [
+        {
+            "name": "cmake-pedantic",
+            "hidden": true,
+            "warnings": {
+                "dev": true,
+                // "deprecated": true,
+                "uninitialized": true,
+                "unusedCli": true,
+                "systemVars": false
+            },
+            "errors": {
+                "dev": true
+            }
+        },
+        {
+            "name": "build",
+            "hidden": true,
+            "binaryDir": "${sourceDir}/build"
+        },
+        {
+            "name": "release",
+            "hidden": true,
+            "binaryDir": "${sourceDir}/build/release",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "RelWithDebInfo"
+            }
+        },
+        {
+            "name": "release2",
+            "hidden": true,
+            "binaryDir": "${sourceDir}/build/release2",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Release"
+            }
+        },
+        {
+            "name": "dev-base",
+            "hidden": true,
+            "inherits": [
+                "cmake-pedantic"
+            ],
+            "binaryDir": "${sourceDir}/build/dev",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Debug",
+                "EVT_BUILD_EXAMPLES": "ON"
+            }
+        },
+        {
+            "name": "lint",
+            "hidden": true,
+            "inherits": [
+                "dev-base",
+                "clang-tidy",
+                "cppcheck"
+            ]
+        },
+        {
+            "name": "flags-gcc-clang",
+            "hidden": true,
+            "cacheVariables": {
+                "CMAKE_CXX_FLAGS": "-D_GLIBCXX_ASSERTIONS=1 -fstack-protector-strong -fstack-clash-protection -Wall -Wextra -Wpedantic -Wconversion -Wsign-conversion -Wcast-qual -Wformat=2 -Wundef -Wshadow -Wcast-align -Wunused -Wnull-dereference -Wdouble-promotion -Wimplicit-fallthrough -Woverloaded-virtual -Wnon-virtual-dtor -Wno-attributes -Wold-style-cast",
+                "CMAKE_EXE_LINKER_FLAGS": "-Wl,--no-undefined,--as-needed,-z,noexecstack,-z,relro,-z,now",
+                "CMAKE_SHARED_LINKER_FLAGS": "-Wl,--no-undefined,--as-needed,-z,noexecstack,-z,relro,-z,now"
+            }
+        },
+        {
+            // needs test
+            "name": "flags-appleclang",
+            "hidden": true,
+            "cacheVariables": {
+                "CMAKE_CXX_FLAGS": "-fstack-protector-strong -Wall -Wextra -Wpedantic -Wconversion -Wsign-conversion -Wcast-qual -Wformat=2 -Wundef -Werror=float-equal -Wshadow -Wcast-align -Wunused -Wnull-dereference -Wdouble-promotion -Wimplicit-fallthrough -Wextra-semi -Woverloaded-virtual -Wnon-virtual-dtor -Wold-style-cast"
+            }
+        },
+        {
+            // needs test
+            "name": "flags-msvc",
+            "description": "Compiler, linker flags for msvc",
+            "hidden": true,
+            "cacheVariables": {
+                "CMAKE_CXX_FLAGS": "/sdl /guard:cf /utf-8 /diagnostics:caret /w14165 /w44242 /w44254 /w44263 /w34265 /w34287 /w44296 /w44365 /w44388 /w44464 /w14545 /w14546 /w14547 /w14549 /w14555 /w34619 /w34640 /w24826 /w14905 /w14906 /w14928 /w45038 /W4 /permissive- /volatile:iso /Zc:inline /Zc:preprocessor /Zc:enumTypes /Zc:lambda /Zc:__cplusplus /Zc:externConstexpr /Zc:throwingNew /EHsc",
+                "CMAKE_EXE_LINKER_FLAGS": "/machine:x64 /guard:cf"
+            }
+        },
+        {
+            "name": "cppcheck",
+            "hidden": true,
+            "cacheVariables": {
+                "CMAKE_CXX_CPPCHECK": "cppcheck;--inline-suppr"
+            }
+        },
+        {
+            "name": "clang-tidy",
+            "hidden": true,
+            "cacheVariables": {
+                "CMAKE_CXX_CLANG_TIDY": "clang-tidy;--header-filter=^${sourceDir}/"
+            }
+        },
+        {
+            "name": "vs2017",
+            "hidden": true,
+            "architecture": "x64",
+            "inherits": [
+                "flags-msvc"
+            ],
+            "environment": {
+                "UseMultiToolTask": "true",
+                "EnforceProcessCountAcrossBuilds": "true"
+            },
+            "generator": "Visual Studio 17 2022"
+        },
+        {
+            "name": "xcode",
+            "hidden": true,
+            "inherits": [
+                "flags-appleclang"
+            ],
+            "generator": "Xcode"
+        },
+        {
+            "name": "ninja-build",
+            "hidden": true,
+            "generator": "Ninja"
+        },
+        {
+            "name": "ninja-main",
+            "hidden": true,
+            "inherits": [
+                "ninja-build",
+                "flags-gcc-clang"
+            ]
+        },
+
+        {
+            "name": "ninja-osx",
+            "hidden": true,
+            "inherits": [
+                "ninja-build",
+                "flags-appleclang"
+            ]
+        },
+        {
+            "name": "ninja-dev",
+            "inherits": [
+                "ninja-main",
+                "dev-base"
+            ]
+        },
+        {
+            "name": "ninja-release",
+            "inherits": [
+                "ninja-main",
+                "release"
+            ]
+        },
+        {
+            "name": "ninja-release2",
+            "inherits": [
+                "ninja-main",
+                "release2"
+            ]
+        },
+        {
+            "name": "ninja-osx-dev",
+            "inherits": [
+                "ninja-osx",
+                "dev-base"
+            ]
+        },
+        {
+            "name": "ninja-osx-release",
+            "inherits": [
+                "ninja-osx",
+                "release"
+            ]
+        },
+        {
+            "name": "ninja-osx-release2",
+            "inherits": [
+                "ninja-osx",
+                "release"
+            ]
+        },
+        {
+            "name": "vs2017-dev",
+            "inherits": [
+                "vs2017",
+                "dev-base"
+            ]
+        },
+        {
+            "name": "vs2017-release",
+            "inherits": [
+                "vs2017",
+                "release"
+            ]
+        },
+        {
+            "name": "vs2017-release2",
+            "inherits": [
+                "vs2017",
+                "release2"
+            ]
+        }
+    ],
+    "buildPresets": [
+        {
+            "name": "ninja-dev",
+            "configurePreset": "ninja-dev",
+            "configuration": "Debug"
+        }
+    ],
+    "testPresets": [
+        {
+            "name": "ninja-dev",
+            "configurePreset": "ninja-dev",
+            "configuration": "Debug",
+            "output": {
+                "outputOnFailure": true
+            },
+            "execution": {
+                "noTestsAction": "error"
+            }
+        }
+    ]
+}

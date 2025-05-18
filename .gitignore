@@ -3,9 +3,16 @@
 *#
 *.bak
 *.log
+*.gz
+*.tar
+*.tgz
+*.zip
 *.orig
 *.rej
 /build
+.gdb_history
+# site cmake presets
+CMakeUserPresets.json
 
 ## github C++ .gitignore template
 # Prerequisites
