@@ -160,7 +160,7 @@ It's hoped that the concerns about compatibility might be mitigated
 with static linking for components produced in this project. This
 needs further testing.
 
-**Known Limitation: spdlog version 2 may not be available from most vendors**
+**Known Limitation: spdlog version 2 availability
 
 It should generally be possible to use the host's alternative for every
 vendored component, except in the case of the host's spdlog build. Generally,
@@ -170,7 +170,6 @@ version 1 sources.
 In the interest of providing support for spdlog version 2 in release builds,
 the libevtlet project should provide testing for ABI compatibility across
 spdlog builds from version 1 and version 2 sources.
-
 
 ### Virtual Environment
 
