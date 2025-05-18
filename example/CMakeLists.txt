@@ -5,7 +5,7 @@ add_executable(
     ev_example.cpp
 )
 
-target_link_libraries(ev_example PRIVATE ev)
+list(APPEND evtlet_targets_ev ev_example)
 
 if(POLICY CMP0167)
   cmake_policy(SET CMP0167 NEW)
@@ -19,3 +19,6 @@ add_executable(
     fiber_simple.cpp
 )
 target_link_libraries(fiber_simple Boost::fiber)
+
+
+set(evtlet_targets_ev ${evtlet_targets_ev} PARENT_SCOPE)

@@ -44,7 +44,7 @@ endif()
 
 set(EVT_BUILD_EXAMPLES OFF CACHE BOOL "Build examples for libevtlet")
 
-set(EVT_VENDOR_LIBEV  OFF CACHE BOOL "Build vendored libev sources")
+set(EVT_VENDOR_LIBEV  ON CACHE BOOL "Build vendored libev sources")
 
 
 #
@@ -59,6 +59,8 @@ set(EVT_VENDOR_LIBEV  OFF CACHE BOOL "Build vendored libev sources")
 #
 
 add_subdirectory(vendor)
+
+set(evtlet_targets_ev "" CACHE INTERNAL "targets that must be linked to libev")
 
 #
 # % project components
@@ -77,4 +79,31 @@ add_subdirectory(tests)
 # % examples
 #
 
-add_subdirectory(example)
+if(${EVT_BUILD_EXAMPLES})
+    add_subdirectory(example)
+endif()
+
+
+# message(STATUS "ev tgts: ${evtlet_targets_ev}")
+
+if(${LIBEV_PC})
+foreach(tgt IN LISTS evtlet_targets_ev)
+    # DNW No targets will have been defined when this file is processed
+    foreach(lib IN LISTS libev_LIBRARIES)
+        target_link_libraries(${tgt} ${EVT_DEP_VISIBILITY} ${lib})
+    endforeach()
+    foreach(dir IN LISTS libev_LIBRARY_DIRS)
+        target_link_directories(${tgt} ${EVT_DEP_VISIBILITY} ${dir})
+    endforeach()
+    foreach(dir IN LISTS libev_INCLUDE_DIRS)
+        target_include_directories(${tgt} ${EVT_DEP_VISIBILITY} ${dir})
+    endforeach()
+    foreach(flag IN LISTS libev_CFLAGS)
+        target_compile_definitions(${tgt} ${EVT_DEP_VISIBILITY} ${flag})
+    endforeach()
+endforeach()
+else()
+foreach(tgt IN LISTS evtlet_targets_ev)
+    target_link_libraries(${tgt} ${EVT_DEP_VISIBILITY} ev)
+endforeach()
+endif()

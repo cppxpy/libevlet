@@ -4,4 +4,7 @@ add_library(evtlet
     "evt.cpp"
 )
 
-target_link_libraries(evtlet ${EVT_DEP_VISIBILITY} ev)
+list(APPEND evtlet_targets_ev evtlet)
+
+
+set(evtlet_targets_ev ${evtlet_targets_ev} PARENT_SCOPE)
