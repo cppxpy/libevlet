@@ -16,7 +16,7 @@ uses [CMake presets][cmake-presets].
 The following intermediate presets are defined, such as to be
 inherited when defining user-visible presets for individual
 host platforms:
-- For debug builds: `dev`
+- For debug builds: `dev-base`
 - For release builds with debug info: `release`
 - For release builds without debug info: `release2`
 
