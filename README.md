@@ -87,16 +87,16 @@ Fach of these presets will be available for extension in the file
   ],
   "buildPresets": [
     {
-      "name": "dev-wk",
-      "configurePreset": "dev-wk",
+      "name": "dev",
+      "configurePreset": "dev",
       "configuration": "Debug",
       "jobs": 8
     }
   ],
   "testPresets": [
     {
-      "name": "dev-wk",
-      "configurePreset": "dev-wk",
+      "name": "dev",
+      "configurePreset": "dev",
       "configuration": "Debug",
       "output": {
         "outputOnFailure": true
@@ -110,7 +110,7 @@ Fach of these presets will be available for extension in the file
 }
 ```
 
-Features of the `dev-wk` preset defined in this example:
+Features of the `dev` preset defined in this example:
 - Development build
 - Parallel build with up to 8 workers
 - Using ninja, with compiler flags common to GCC and clang compilers
