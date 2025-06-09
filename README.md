@@ -76,7 +76,7 @@ Fach of these presets will be available for extension in the file
         "CMAKE_EXPORT_COMPILE_COMMANDS": true,
         "FETCHCONTENT_FULLY_DISCONNECTED": true,
         "BUILD_SHARED_LIBS": false,
-        "EVT_VENDOR_LIBEV": true,
+        "LIBEV_VENDOR_BUILD": true,
         "CMAKE_FIND_ROOT_PATH": "/opt/miniforge3/envs/libevtlet;/usr"
       },
       "environment": {

@@ -1,0 +1,62 @@
+# generated from @PROJECT_SOURCE_DIR@/doc/Doxyfile.in
+
+PROJECT_NAME = "@PROJECT_NAME@"
+PROJECT_NUMBER = "@PROJECT_VERSION@"
+
+INPUT = @PROJECT_SOURCE_DIR@/doc/pages @PROJECT_SOURCE_DIR@/source
+RECURSIVE = YES
+STRIP_FROM_PATH = "@PROJECT_SOURCE_DIR@/source" "@PROJECT_SOURCE_DIR@/doc/pages"
+STRIP_FROM_INC_PATH = "@PROJECT_SOURCE_DIR@/source"
+
+USE_MDFILE_AS_MAINPAGE = @PROJECT_SOURCE_DIR@/doc/pages/mainpage.md
+OUTPUT_DIRECTORY = @PROJECT_BINARY_DIR@/doxygen
+
+BUILTIN_STL_SUPPORT = YES
+NUM_PROC_THREADS = 0
+TIMESTAMP = DATETIME
+
+EXTRACT_ALL = YES
+EXTRACT_STATIC = YES
+EXTRACT_ANON_NSPACES = YES
+HIDE_IN_BODY_DOCS = YES
+HIDE_UNDOC_NAMESPACES = NO
+INTERNAL_DOCS = YES
+CASE_SENSE_NAMES = YES
+SORT_BRIEF_DOCS = YES
+# SORT_MEMBERS_CTORS_1ST = YES
+SORT_BY_SCOPE_NAME = YES
+SHOW_USED_FILES = NO
+SHOW_FILES = NO
+
+# - XML output is for post-processing with m.css
+# - HTML output can be used to review how the documentation
+#    would appear without post-processing
+# - a PDF build would require a LaTeX toolchain,
+#   but should be supported here (FIXME)
+GENERATE_HTML = YES
+GENERATE_XML = YES
+XML_PROGRAMLISTING = NO
+GENERATE_LATEX = NO
+CREATE_SUBDIRS = NO
+
+# not generating doxygen UML
+PLANTUML_JAR_PATH =
+
+QUIET = YES
+HAVE_DOT = YES
+CALL_GRAPH = YES
+CALLER_GRAPH = YES
+DOT_IMAGE_FORMAT = SVG
+INTERACTIVE_SVG = YES
+
+# in the doxygen HTML output, "Functions"
+# will be listed under "Namespaces" and
+# without any separate index
+#
+# no concept of a namespace will be
+# introduced for definitions without
+# a direct namespace
+
+GROUP_NESTED_COMPOUNDS = YES
+INLINE_GROUPED_CLASSES = YES
+INLINE_SIMPLE_STRUCTS = YES

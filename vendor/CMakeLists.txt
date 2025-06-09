@@ -9,12 +9,12 @@ set(CMAKE_FIND_PACKAGE_TARGETS_GLOBAL ON)
 # % libev
 #
 
-if(EVT_VENDOR_LIBEV)
+if(${LIBEV_VENDOR_BUILD})
 FetchContent_Declare(
     libev
     SYSTEM
     SOURCE_DIR ${PROJECT_SOURCE_DIR}/vendor/libev
-    DOWNLOAD_COMMAND git submodule update --init vendor/libev
+    DOWNLOAD_COMMAND ""
     GIT_REPOSITORY https://github.com/cppxpy/libev.git
     GIT_TAG v4.33-21-cmake0
     GIT_SHALLOW TRUE
@@ -22,19 +22,23 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(libev)
 set(LIBEV_PC OFF PARENT_SCOPE)
 else()
-include(FindPkgConfig)
-pkg_check_modules(libev REQUIRED libev>=4.0)
-set(LIBEV_PC ON PARENT_SCOPE)
-endif() # EVT_VENDOR_LIBEV
+    include(FindPkgConfig)
+    pkg_check_modules(libev REQUIRED libev>=4.0)
+    set(LIBEV_PC ${libev_FOUND} PARENT_SCOPE)
+endif() # LIBEV_VENDOR_BUILD
 
 #
 # % boost
 #
 
 #
-# % fmt
 #
 
-#
-# % spdlog 2.x
-#
+
+set(BOOST_ASIO_COMPONENTS "system;coroutine;regex;thread"
+    CACHE INTERNAL "library subset for BOOST_REQUIRED_COMPONENTS to be used with boost.asio")
+
+set(BOOST_REQUIRED_COMPONENTS "context;fiber;${BOOST_ASIO_COMPONENTS}"
+    CACHE INTERNAL "Required boost libraries (not header-only)")
+
+find_package(Boost REQUIRED COMPONENTS ${BOOST_REQUIRED_COMPONENTS} GLOBAL)

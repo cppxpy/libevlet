@@ -7,6 +7,15 @@
     },
     "configurePresets": [
         {
+            "name": "doc",
+            "generator": "Ninja",
+            "binaryDir": "${sourceDir}/build/doc",
+            "cacheVariables": {
+                "EVTLET_DOC": true,
+                "EVTLET_DOC_ONLY": true
+            }
+        },
+        {
             "name": "cmake-pedantic",
             "hidden": true,
             "warnings": {

@@ -19,6 +19,32 @@ if(POLICY CMP0167)
   cmake_policy(SET CMP0167 NEW)
 endif()
 
+#
+# % cmake vars for project
+#
+
+set(EVTLET_DOC OFF CACHE STRING "build documentation for libevtlet")
+set(EVTLET_DOC_ONLY ${EVTLET_DOC} CACHE STRING "build only documentation for libevtlet" )
+
+if(EVTLET_DOC)
+  find_program(DOXYGEN_PROGRAM "doxygen" NO_CACHE)
+  if(DOXYGEN_PROGRAM EQUAL "DOXYGEN_PROGRAM-notfound")
+    message(WARNING "EVTLET_DOC was specified but doxygen was not found")
+    message(WARNING "Not building libevtlet documentation")
+    set(EVTLET_DOC OFF)
+  endif()
+endif()
+
+
+#
+# - Common Features
+#
+
+if(EVTLET_DOC)
+add_subdirectory(doc)
+endif()
+
+if(NOT EVTLET_DOC_ONLY)
 
 # include_directories(SYSTEM vendor/include)
 # include_directories(${CMAKE_CURRENT_BINARY_DIR}/gen_include)
@@ -43,7 +69,7 @@ set(EVT_LINK_SHARED ${BUILD_SHARED_LIBS} CACHE BOOL "Link libevtlet dependencies
 
 set(EVT_BUILD_EXAMPLES OFF CACHE BOOL "Build examples for libevtlet")
 
-set(EVT_VENDOR_LIBEV ON CACHE BOOL "Build vendored libev sources")
+set(LIBEV_VENDOR_BUILD ON CACHE BOOL "Build vendored libev sources")
 
 
 #
@@ -81,3 +107,5 @@ add_subdirectory(tests)
 if(${EVT_BUILD_EXAMPLES})
     add_subdirectory(example)
 endif()
+
+endif() ## EVTLET_DOC_ONLY

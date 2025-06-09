@@ -1,36 +1,49 @@
 #
 # usage:
-# $ conda env create --file <THIS_FILE> [-p <DEST_DIR>]
-# subsq
-# $ conda-env update --file <THIS_FILE> [-p <DEST_DIR>] ...
-# 
+# $ VENV=latest ./mini_shell.sh conda env create [-p <DEST_DIR>] ...
+#
+# subsequently:
+# $ ./mini_shell.sh <cmd>
+#
+# updating the venv:
+# $ conda env update [--file <THIS_FILE>] ...
+#
 
 name: libevtlet
 channels:
   - conda-forge
   - defaults
 dependencies:
-  # - cmake
-  - conda-forge/label/python_debug::python>=3.12, <3.13
-  - python=3.12
-  - libev
-  - libuv
-  - boost
+  # - python>=3.11
+  - conda-forge/label/python_debug::python>=3.11
+  - cmake
+  - make
   - gcc>=14
   - gxx>=14
   - clangdev>=19
   - clangxx>=19
-  ## compiler-rt provides llvm asan support
-  - compiler-rt>=19
-  ## note LLVMSupport library (static) as libLLVMSupport.a
-  # - llvmdev>=19
-  # - libcxx>=19
-  # - libcxxabi>=19
+  - compiler-rt>=19 # llvm asan support
+  - llvmdev>=19
+  - libcxx>=19
+  - libcxxabi>=19
+  - libev
+  - libuv
+  - boost
+  - fmt
+  - spdlog
   - catch2
-  - pybind11
+  ## this project will use pybind11 sources
+  ## via vendored includes
+  # - pybind11
   - gevent
   - pyzmq
+  - doxygen
+  - graphviz # this adds some dependencies (x11 libs)
+  ## pdm 2.24.2 is available with conda,
+  ## but the solver seems to get stuck on it,
+  ## so use latest from pip
+  # - pdm>=2.24.2
   - ipython
-  - pdm
-# pip:
-# - ...
+  - pip
+  - pip:
+      - pdm
