@@ -77,7 +77,7 @@ set(LIBEV_VENDOR_BUILD ON CACHE BOOL "Build vendored libev sources")
 #
 
 # - ev
-# - fmt, spdlog
+# - pybind11 version 3
 
 #
 # % vendored dependencies
@@ -86,6 +86,14 @@ set(LIBEV_VENDOR_BUILD ON CACHE BOOL "Build vendored libev sources")
 add_subdirectory(vendor)
 
 set(evtlet_targets_ev "" CACHE INTERNAL "targets that must be linked to libev")
+
+#
+# % other dependencies
+#
+
+# fmt, spdlog
+# boost for non-vendor build, handled in vendor/
+#
 
 #
 # % project components
