@@ -12,7 +12,7 @@
             "warnings": {
                 "dev": true,
                 // "deprecated": true,
-                "uninitialized": true,
+                // "uninitialized": true,
                 "unusedCli": true,
                 "systemVars": false
             },
@@ -23,7 +23,7 @@
         {
             "name": "build",
             "hidden": true,
-            "binaryDir": "${sourceDir}/build"
+            "binaryDir": "${sourceDir}/build/default"
         },
         {
             "name": "release",

@@ -1,5 +1,7 @@
 include(FetchContent)
 
+set(CMAKE_FIND_PACKAGE_TARGETS_GLOBAL ON)
+
 ## gcc/clang-specific
 # add_compile_options("-Wno-error=float-equal")
 
