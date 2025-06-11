@@ -51,15 +51,23 @@ find_package(Boost REQUIRED COMPONENTS ${BOOST_REQUIRED_COMPONENTS} GLOBAL)
 
 
 if(USE_BEMAN_OPTIONAL)
+set(VENDOR_SUBMODULE_optional "vendor/optional")
+include(FindGit)
+find_package(Git QUIET REQUIRED)
 FetchContent_Declare(
     optional
-    SOURCE_DIR ${PROJECT_SOURCE_DIR}/vendor/optional
+    SOURCE_DIR "${PROJECT_SOURCE_DIR}/${VENDOR_SUBMODULE_optional}"
     DOWNLOAD_COMMAND ""
     GIT_REPOSITORY https://github.com/bemanproject/optional.git
     GIT_SHALLOW TRUE
     GIT_COMMAND ""
     SYSTEM OVERRIDE_FIND_PACKAGE
 )
+add_custom_target(vendor_submodule_update_optional
+  WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
+  COMMAND ${GIT_EXECUTABLE} submodule update --init ${VENDOR_SUBMODULE_optional}
+)
+add_dependencies(vendor_submodules vendor_submodule_update_optional)
 FetchContent_MakeAvailable(optional)
 if(EVTLET_DEPS_QUIET)
 set_directory_properties(FETCHCONTENT_SOURCE_DIR_OPTIONAL SYSTEM TRUE)
