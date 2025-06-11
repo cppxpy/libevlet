@@ -11,11 +11,11 @@ target_include_directories(test_skein_cond SYSTEM PRIVATE
     )
 target_link_libraries(test_skein_cond PRIVATE Boost::fiber)
 
-if(USE_BEMAN_OPTIONAL)
+if(${USE_BEMAN_OPTIONAL})
     target_compile_definitions(test_skein_cond PRIVATE BEMAN_OPTIONAL)
 endif()
 
-if(USE_BEMAN_SCOPE)
+if(${USE_BEMAN_SCOPE})
     target_compile_definitions(test_skein_cond PRIVATE BEMAN_SCOPE)
 endif()
 
