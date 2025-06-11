@@ -95,13 +95,10 @@ set(EVT_BUILD_EXAMPLES OFF CACHE BOOL
 set(LIBEV_VENDOR_BUILD ON CACHE BOOL
   "Build and link with vendored libev sources")
 
-
-# set(LIBASSERT_VENDOR_BUILD ON CACHE BOOL "Build vendored libassert source tree")
-
 #
 # % vendored build options
-#
 
+#
 # - ev
 # - pybind11 version 3
 
@@ -128,6 +125,7 @@ if(NOT USE_BEMAN_SCOPE)
 endif()
 
 set(CMAKE_FIND_PACKAGE_TARGETS_GLOBAL ON)
+include(cmake/vendoring.cmake)
 add_subdirectory(vendor)
 
 

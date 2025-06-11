@@ -19,6 +19,4 @@ if(USE_BEMAN_SCOPE)
     target_compile_definitions(test_skein_cond PRIVATE BEMAN_SCOPE)
 endif()
 
-foreach(TGT ${BUILDSYSTEM_TARGETS})
-add_dependencies(vendor_submodules ${TGT})
-endforeach()
+assign_vendored_submodules()
