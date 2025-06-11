@@ -64,7 +64,7 @@ if(EVTLET_DOC)
 add_subdirectory(doc)
 endif()
 
-if(NOT EVTLET_DOC_ONLY)
+if(NOT ${EVTLET_DOC_ONLY})
 
 # include_directories(SYSTEM vendor/include)
 # include_directories(${CMAKE_CURRENT_BINARY_DIR}/gen_include)
@@ -108,17 +108,17 @@ set(LIBEV_VENDOR_BUILD ON CACHE BOOL
 
 include(CheckIncludeFile)
 
-if(NOT USE_BEMAN_OPTIONAL)
-  check_include_file(<optional> HAVE_STD_OPTIONAL)
-  if(NOT HAVE_STD_OPTIONAL)
+if(NOT ${USE_BEMAN_OPTIONAL})
+  check_include_file("<optional>" HAVE_STD_OPTIONAL)
+  if(NOT ${HAVE_STD_OPTIONAL})
     message(STATUS "stdlib <optional> not found, using beman/optional")
     set(USE_BEMAN_OPTIONAL TRUE)
   endif()
 endif()
 
-if(NOT USE_BEMAN_SCOPE)
-  check_include_file(<experimental/scope> HAVE_STD_EXPERIMENTAL_SCOPE)
-  if(NOT HAVE_STD_EXPERIMENTAL_SCOPE)
+if(NOT ${USE_BEMAN_SCOPE})
+  check_include_file("<experimental/scope>" HAVE_STD_EXPERIMENTAL_SCOPE)
+  if(NOT ${HAVE_STD_EXPERIMENTAL_SCOPE})
     message(STATUS "stdlib <experimental/scope> not found, using beman/scope")
     set(USE_BEMAN_SCOPE TRUE)
   endif()
