@@ -243,6 +243,7 @@ protected:
     // such that this method may be a no-op here - though
     // it may be usable in this case, if (perhaps only if)
     // using a _recursive_ fiber mutex for the CV
+  }
 };
 
 } // namespace evtlet
