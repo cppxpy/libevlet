@@ -20,8 +20,6 @@
             "hidden": true,
             "warnings": {
                 "dev": true,
-                // "deprecated": true,
-                // "uninitialized": true,
                 "unusedCli": true,
                 "systemVars": false
             },
@@ -81,7 +79,6 @@
             }
         },
         {
-            // needs test
             "name": "flags-appleclang",
             "hidden": true,
             "cacheVariables": {
@@ -89,7 +86,6 @@
             }
         },
         {
-            // needs test
             "name": "flags-msvc",
             "description": "Compiler, linker flags for msvc",
             "hidden": true,
