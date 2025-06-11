@@ -1,6 +1,5 @@
 include(FetchContent)
 
-set(CMAKE_FIND_PACKAGE_TARGETS_GLOBAL ON)
 
 ## gcc/clang-specific
 # add_compile_options("-Wno-error=float-equal")
@@ -9,17 +8,21 @@ set(CMAKE_FIND_PACKAGE_TARGETS_GLOBAL ON)
 # % libev
 #
 
-if(${LIBEV_VENDOR_BUILD})
+if(LIBEV_VENDOR_BUILD)
 FetchContent_Declare(
     libev
-    SYSTEM
     SOURCE_DIR ${PROJECT_SOURCE_DIR}/vendor/libev
     DOWNLOAD_COMMAND ""
     GIT_REPOSITORY https://github.com/cppxpy/libev.git
     GIT_TAG v4.33-21-cmake0
     GIT_SHALLOW TRUE
+    GIT_COMMAND ""
+    SYSTEM OVERRIDE_FIND_PACKAGE
 )
 FetchContent_MakeAvailable(libev)
+if(EVTLET_DEPS_QUIET)
+set_directory_properties(FETCHCONTENT_SOURCE_DIR_LIBEV SYSTEM TRUE)
+endif()
 set(LIBEV_PC OFF PARENT_SCOPE)
 else()
     include(FindPkgConfig)
@@ -42,3 +45,39 @@ set(BOOST_REQUIRED_COMPONENTS "context;fiber;${BOOST_ASIO_COMPONENTS}"
     CACHE INTERNAL "Required boost libraries (not header-only)")
 
 find_package(Boost REQUIRED COMPONENTS ${BOOST_REQUIRED_COMPONENTS} GLOBAL)
+#
+# % conditional/optional dependencies from the beman project
+#
+
+
+if(USE_BEMAN_OPTIONAL)
+FetchContent_Declare(
+    optional
+    SOURCE_DIR ${PROJECT_SOURCE_DIR}/vendor/optional
+    DOWNLOAD_COMMAND ""
+    GIT_REPOSITORY https://github.com/bemanproject/optional.git
+    GIT_SHALLOW TRUE
+    GIT_COMMAND ""
+    SYSTEM OVERRIDE_FIND_PACKAGE
+)
+FetchContent_MakeAvailable(optional)
+if(EVTLET_DEPS_QUIET)
+set_directory_properties(FETCHCONTENT_SOURCE_DIR_OPTIONAL SYSTEM TRUE)
+endif()
+endif()
+
+if(USE_BEMAN_SCOPE)
+FetchContent_Declare(
+    scope
+    SOURCE_DIR ${PROJECT_SOURCE_DIR}/vendor/scope
+    DOWNLOAD_COMMAND ""
+    GIT_REPOSITORY https://github.com/bemanproject/scope.git
+    GIT_SHALLOW TRUE
+    GIT_COMMAND ""
+    SYSTEM OVERRIDE_FIND_PACKAGE
+)
+FetchContent_MakeAvailable(scope)
+if(EVTLET_DEPS_QUIET)
+set_directory_properties(FETCHCONTENT_SOURCE_DIR_SCOPE SYSTEM TRUE)
+endif()
+endif()

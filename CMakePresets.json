@@ -59,7 +59,7 @@
             "binaryDir": "${sourceDir}/build/dev",
             "cacheVariables": {
                 "CMAKE_BUILD_TYPE": "Debug",
-                "EVT_BUILD_EXAMPLES": "ON"
+                "BUILD_TESTS": true
             }
         },
         {

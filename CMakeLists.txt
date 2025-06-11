@@ -20,11 +20,23 @@ if(POLICY CMP0167)
 endif()
 
 #
-# % cmake vars for project
+# % cache vars for project
 #
 
-set(EVTLET_DOC OFF CACHE STRING "build documentation for libevtlet")
-set(EVTLET_DOC_ONLY ${EVTLET_DOC} CACHE STRING "build only documentation for libevtlet" )
+set(BUILD_SHARED_LIBS ON CACHE BOOL
+   "Build shared libraries")
+set(BUILD_TESTS OFF CACHE BOOL
+   "Build tests")
+
+if(DEFINED ENV{BUILD_TESTS})
+  message(STATUS "BUILD_TESTS defined in environment, enabling tests")
+  set(BUILD_TESTS $ENV{BUILD_TESTS})
+endif()
+
+set(EVTLET_DOC OFF CACHE STRING
+   "Build documentation for libevtlet")
+set(EVTLET_DOC_ONLY ${EVTLET_DOC} CACHE STRING
+   "Build only documentation for libevtlet" )
 
 if(EVTLET_DOC)
   find_program(DOXYGEN_PROGRAM "doxygen" NO_CACHE)
@@ -35,8 +47,16 @@ if(EVTLET_DOC)
   endif()
 endif()
 
+set(EVTLET_DEPS_QUIET ON CACHE BOOL
+   "Build libevtlet dependencies as boost SYSTEM dirs")
 
-#
+set(USE_BEMAN_OPTIONAL OFF CACHE BOOL
+  "If enabled or stdlib <optionmal> is not available, use beman/optional")
+set(USE_BEMAN_SCOPE OFF CACHE BOOL
+  "If enabled or stdlib <experimental/scope> is not available, use beman/scope")
+
+
+
 # - Common Features
 #
 
@@ -63,14 +83,20 @@ if(NOT EVTLET_DOC_ONLY)
 # % project build options
 #
 
-set(BUILD_SHARED_LIBS OFF CACHE BOOL "Build shared libraries")
+set(BUILD_SHARED_LIBS OFF CACHE BOOL
+  "Build shared libraries")
 
-set(EVT_LINK_SHARED ${BUILD_SHARED_LIBS} CACHE BOOL "Link libevtlet dependencies as shared libraries")
+## TBD
+# set(EVT_LINK_SHARED ${BUILD_SHARED_LIBS} CACHE BOOL "Link libevtlet dependencies as shared libraries")
 
-set(EVT_BUILD_EXAMPLES OFF CACHE BOOL "Build examples for libevtlet")
+set(EVT_BUILD_EXAMPLES OFF CACHE BOOL
+  "Build examples for libevtlet")
 
-set(LIBEV_VENDOR_BUILD ON CACHE BOOL "Build vendored libev sources")
+set(LIBEV_VENDOR_BUILD ON CACHE BOOL
+  "Build and link with vendored libev sources")
 
+
+# set(LIBASSERT_VENDOR_BUILD ON CACHE BOOL "Build vendored libassert source tree")
 
 #
 # % vendored build options
@@ -83,9 +109,25 @@ set(LIBEV_VENDOR_BUILD ON CACHE BOOL "Build vendored libev sources")
 # % vendored dependencies
 #
 
+include(CheckIncludeFile)
+
+if(NOT USE_BEMAN_OPTIONAL)
+  check_include_file(<optional> HAVE_STD_OPTIONAL)
+  if(NOT HAVE_STD_OPTIONAL)
+    set(USE_BEMAN_OPTIONAL ON)
+  endif()
+endif()
+
+if(NOT USE_BEMAN_SCOPE)
+  check_include_file(<experimental/scope> HAVE_STD_EXPERIMENTAL_SCOPE)
+  if(NOT HAVE_STD_EXPERIMENTAL_SCOPE)
+    set(USE_BEMAN_SCOPE ON)
+  endif()
+endif()
+
+set(CMAKE_FIND_PACKAGE_TARGETS_GLOBAL ON)
 add_subdirectory(vendor)
 
-set(evtlet_targets_ev "" CACHE INTERNAL "targets that must be linked to libev")
 
 #
 # % other dependencies
@@ -93,7 +135,6 @@ set(evtlet_targets_ev "" CACHE INTERNAL "targets that must be linked to libev")
 
 # fmt, spdlog
 # boost for non-vendor build, handled in vendor/
-#
 
 #
 # % project components
@@ -105,7 +146,11 @@ add_subdirectory(source)
 # % tests
 #
 
-add_subdirectory(tests)
+if(BUILD_TESTS)
+  # preload for include(Catch)
+  find_package(Catch2 QUIET)
+  add_subdirectory(tests)
+endif()
 
 
 #

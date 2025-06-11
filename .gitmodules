@@ -2,3 +2,12 @@
 	path = vendor/libev
 	url = ../libev.git
 	branch = cmake
+[submodule "vendor/libassert"]
+	path = vendor/libassert
+	url = https://github.com/jeremy-rifkin/libassert.git
+[submodule "vendor/optional"]
+	path = vendor/optional
+	url = https://github.com/bemanproject/optional
+[submodule "vendor/scope"]
+	path = vendor/scope
+	url = https://github.com/bemanproject/scope.git

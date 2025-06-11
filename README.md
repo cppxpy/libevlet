@@ -269,6 +269,10 @@ available via [conda] and [miniforge3].
 version sync for boost: [boost libraries][boost-lib]
 
 - [boost.fiber][boost.fiber-src]
+- C++ language extensions
+  - [bemanproject/scope](https://github.com/bemanproject/scope)
+  - [bemanproject/optional](https://github.com/bemanproject/optional)
+  - [bemanproject/execution](https://github.com/bemanproject/execution)
 - Conditional Runtime Dependencies
   - [libev][libev-src]
   - [uvw][uvw], [libuv][libuv-src]

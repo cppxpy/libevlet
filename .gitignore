@@ -12,7 +12,7 @@
 /build
 .gdb_history
 # site cmake presets
-CMakeUserPresets.json
+CMakeUserPresets*.json
 
 ## github C++ .gitignore template
 # Prerequisites
