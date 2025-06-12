@@ -8,6 +8,6 @@
 [submodule "vendor/optional"]
 	path = vendor/optional
 	url = https://github.com/bemanproject/optional
-[submodule "vendor/scope"]
-	path = vendor/scope
-	url = https://github.com/bemanproject/scope.git
+[submodule "vendor/scope-guard"]
+	path = vendor/scope-guard
+	url = https://github.com/offa/scope-guard.git

@@ -32,20 +32,18 @@ set(BOOST_REQUIRED_COMPONENTS "context;fiber;${BOOST_ASIO_COMPONENTS}"
     CACHE INTERNAL "Required boost libraries (not header-only)")
 
 find_package(Boost REQUIRED COMPONENTS ${BOOST_REQUIRED_COMPONENTS} GLOBAL)
-
-#
-# % conditional/optional dependencies from the beman project
-#
-
+set(Boost_INCLUDE_DIRS ${Boost_INCLUDE_DIRS} PARENT_SCOPE)
 
 if(USE_BEMAN_OPTIONAL)
-add_vendored_submodule(optional optional
-  GIT_REPOSITORY https://github.com/bemanproject/optional.git
-)
+  add_vendored_submodule(optional optional
+    GIT_REPOSITORY https://github.com/bemanproject/optional.git
+  )
+  set(optional_INCLUDE_DIRS ${beman_optional_SOURCE_DIR}/include PARENT_SCOPE)
 endif()
 
-if(USE_BEMAN_SCOPE)
-add_vendored_submodule(scope scope
-  GIT_REPOSITORY https://github.com/bemanproject/scope.git
-)
+if(USE_SCOPE_GUARD)
+  add_vendored_submodule(scope_guard scope-guard
+    GIT_REPOSITORY https://github.com/offa/scope-guard.git
+  )
+  set(scope_guard_INCLUDE_DIRS ${ScopeGuard_SOURCE_DIR}/include PARENT_SCOPE)
 endif()

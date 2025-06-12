@@ -4,10 +4,11 @@ add_custom_target(vendor_submodules ALL)
 
 macro(add_vendored_submodule name vendor)
 find_package(Git QUIET REQUIRED)
-set(VENDOR_SUBMODULE_${name} "vendor/${vendor}")
+set(VENDOR_SUBMODULE_${name} vendor/${vendor})
+set(VENDOR_SOURCE_DIR_${name} ${PROJECT_SOURCE_DIR}/${VENDOR_SUBMODULE_${name}})
 FetchContent_Declare(
     ${name}
-    SOURCE_DIR "${PROJECT_SOURCE_DIR}/${VENDOR_SUBMODULE_${name}}"
+    SOURCE_DIR ${VENDOR_SOURCE_DIR_${name}}
     DOWNLOAD_COMMAND ""
     ${ARGV}
     GIT_SHALLOW TRUE
@@ -28,7 +29,8 @@ endmacro()
 macro(assign_vendored_submodules)
 # call this at the end of a file defining cmake targets,
 # such that any target may depend on any vendored submodule
-foreach(_TGT ${BUILDSYSTEM_TARGETS})
+get_directory_property(_DIR_TARGETS BUILDSYSTEM_TARGETS)
+foreach(_TGT ${_DIR_TARGETS})
 add_dependencies(vendor_submodules ${_TGT})
 endforeach()
 endmacro()

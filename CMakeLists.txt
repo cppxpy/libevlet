@@ -52,8 +52,11 @@ set(EVTLET_DEPS_QUIET ON CACHE BOOL
 
 set(USE_BEMAN_OPTIONAL OFF CACHE BOOL
   "If enabled or stdlib <optionmal> is not available, use beman/optional")
-set(USE_BEMAN_SCOPE OFF CACHE BOOL
-  "If enabled or stdlib <experimental/scope> is not available, use beman/scope")
+
+set(USE_SCOPE_GUARD OFF CACHE BOOL
+  "If enabled or stdlib <experimental/scope> is not available, use sr scope-guard")
+set(SCOPEGUARD_UNITTEST OFF CACHE BOOL
+  "Build unit tests for scope-guard")
 
 
 
@@ -116,18 +119,17 @@ if(NOT ${USE_BEMAN_OPTIONAL})
   endif()
 endif()
 
-if(NOT ${USE_BEMAN_SCOPE})
+if(NOT ${USE_SCOPE_GUARD})
   check_include_file("<experimental/scope>" HAVE_STD_EXPERIMENTAL_SCOPE)
   if(NOT ${HAVE_STD_EXPERIMENTAL_SCOPE})
-    message(STATUS "stdlib <experimental/scope> not found, using beman/scope")
-    set(USE_BEMAN_SCOPE TRUE)
+    message(STATUS "stdlib <experimental/scope> not found, using scope-guard")
+    set(USE_SCOPE_GUARD ON CACHE BOOL "overriding value for USE_SCOPE_GUARD" FORCE)
   endif()
 endif()
 
 set(CMAKE_FIND_PACKAGE_TARGETS_GLOBAL ON)
 include(cmake/vendoring.cmake)
 add_subdirectory(vendor)
-
 
 #
 # % other dependencies

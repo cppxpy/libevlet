@@ -1,12 +1,13 @@
 #pragma once
 
-#ifdef BEMAN_SCOPE
-#include <beman/scope/scope.hpp>
+#ifdef USE_SCOPE_GUARD
 #ifndef SCOPE_EXIT
-#define SCOPE_EXIT beman::scope::scope_exit
+#include <scope_exit.h>
+#define SCOPE_EXIT sr::scope_exit
 #endif
 #ifndef SCOPE_FAIL
-#define SCOPE_FAIL beman::scope::scope_fail
+#include <scope_fail.h>
+#define SCOPE_FAIL sr::scope_fail
 #endif
 #else
 #include <experimental/scope>

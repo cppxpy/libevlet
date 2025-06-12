@@ -1,6 +1,6 @@
 #pragma once
 
-#ifdef BEMAN_OPTIONAL
+#ifdef USE_BEMAN_OPTIONAL
 #include <beman/optional/optional.hpp>
 #define OPTIONAL_T beman::optional::optional
 #define NULLOPT beman::optional::nullopt
