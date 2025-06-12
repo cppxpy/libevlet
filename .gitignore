@@ -9,6 +9,7 @@
 *.zip
 *.orig
 *.rej
+.env*
 /build
 .gdb_history
 # site cmake presets

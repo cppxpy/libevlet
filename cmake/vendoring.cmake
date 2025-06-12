@@ -17,7 +17,7 @@ FetchContent_Declare(
 )
 add_custom_target(vendor_submodule_update_${name}
   WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
-  COMMAND ${GIT_EXECUTABLE} submodule update --init ${VENDOR_SUBMODULE_${name}}
+  COMMAND ${GIT_EXECUTABLE} submodule update --init --single-branch ${VENDOR_SUBMODULE_${name}}
 )
 add_dependencies(vendor_submodules vendor_submodule_update_${name})
 FetchContent_MakeAvailable(${name})

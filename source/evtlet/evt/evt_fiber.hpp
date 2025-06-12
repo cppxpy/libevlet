@@ -1,5 +1,5 @@
 /**
- * @file skein_cond.hpp
+ * @file evt_cond.hpp
  * @brief prototype (with condition variables) onto boost.fiber and
  * boost.context
  *
@@ -26,7 +26,7 @@
 
 namespace evtlet {
 
-enum class skein_state : size_t {
+enum class evt_state : size_t {
   STATE_NONE = 0,
   STATE_PENDING = 1,
   STATE_DETACHED = 2,
@@ -42,7 +42,7 @@ enum class scheduling : size_t { SCHED_DEFER = 0, SCHED_IMMED = 1 };
  *
  * @tparam T return value type for the event function
  */
-template <typename T> class skein {
+template <typename T> class evt {
 public:
   using value_t = T;
   using fiber_t = boost::fibers::fiber;
@@ -64,7 +64,7 @@ private:
   }
 
   const scheduling m_sched;
-  OPTIONAL_T<skein_state> m_state;
+  OPTIONAL_T<evt_state> m_state;
   OPTIONAL_T<value_t> m_value;
   std::unique_ptr<fiber_t, std::function<void(fiber_t *)>> m_fiber;
 
@@ -72,7 +72,7 @@ private:
   condition_t m_cond;
 
 public:
-  skein(scheduling sched = scheduling::SCHED_DEFER)
+  evt(scheduling sched = scheduling::SCHED_DEFER)
       : m_sched(sched), m_state(), m_value(NULLOPT),
         m_fiber(nullptr, _dealloc_fiber) {
     if (static_cast<size_t>(sched) &
@@ -86,12 +86,12 @@ public:
   };
 
   /// no copy
-  skein(skein const &) = delete;
+  evt(evt const &) = delete;
 
   /// no assign
-  skein &operator=(skein const &) = delete;
+  evt &operator=(evt const &) = delete;
 
-  virtual ~skein() {
+  virtual ~evt() {
     if (m_fiber && m_fiber->joinable()) {
       m_fiber->detach();
     }
@@ -155,9 +155,9 @@ public:
       }
     }}; // guard
     if (!m_fiber) {
-      m_state.emplace(skein_state::STATE_PENDING);
+      m_state.emplace(evt_state::STATE_PENDING);
       DBGMSG("dispatch fiber: new");
-      fiber_t *disp = new fiber_t(std::bind(&skein<T>::dispatch_func, this));
+      fiber_t *disp = new fiber_t(std::bind(&evt<T>::dispatch_func, this));
       m_fiber.reset(std::move(disp));
     };
     m_cv_lock.unlock();
@@ -200,19 +200,19 @@ public:
     return opt_id;
   }
 
-  virtual skein_state get_state() {
+  virtual evt_state get_state() {
     m_cv_lock.lock();
     SCOPE_EXIT guard{[this]() { m_cv_lock.unlock(); }};
     return static_cast<bool>(m_fiber)
                ? (m_value.has_value()
                       // has a fiber and value
-                      ? skein_state::STATE_DONE
+                      ? evt_state::STATE_DONE
                       // has a fiber, no value
                       : (static_cast<bool>(m_fiber->get_id())
-                             ? skein_state::STATE_PENDING
-                             : skein_state::STATE_PENDING_DETACHED))
+                             ? evt_state::STATE_PENDING
+                             : evt_state::STATE_PENDING_DETACHED))
                // has no fiber at this time
-               : skein_state::STATE_NONE;
+               : evt_state::STATE_NONE;
   }
 
 protected:
@@ -224,8 +224,8 @@ protected:
     auto vv = func();
     cv_lock_acquire();
     m_value.emplace(std::move(vv));
-    ASSERT(m_state != skein_state::STATE_DONE);
-    m_state.emplace(skein_state::STATE_DONE);
+    ASSERT(m_state != evt_state::STATE_DONE);
+    m_state.emplace(evt_state::STATE_DONE);
     ASSERT(m_fiber);
     if (m_fiber->joinable()) {
       // detach the fiber before potential deletion
