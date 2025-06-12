@@ -21,20 +21,17 @@
 #include <boost/fiber/mutex.hpp>
 
 #include <evtlet/evt/evt.hpp>
+#include <evtlet/evt/evt_state.hpp>
 #include <evtlet/util/dbg.hpp>
 #include <evtlet/util/optional_source.hpp>
 #include <evtlet/util/scope_source.hpp>
 
 namespace evtlet {
 
-enum class scheduling : size_t { SCHED_DEFER = 0, SCHED_IMMED = 1 };
-
-enum class evt_state : size_t {
-  STATE_NONE = 0,
-  STATE_PENDING = 1,
-  STATE_DETACHED = 2,
-  STATE_DONE = 4,
-  STATE_PENDING_DETACHED = STATE_PENDING | STATE_DETACHED
+enum class scheduling : size_t {
+  SCHED_NEVER = 0,
+  SCHED_DEFER = 1,
+  SCHED_IMMED = 2
 };
 
 /**
@@ -42,15 +39,13 @@ enum class evt_state : size_t {
  *
  * @tparam T return value type for the event function
  */
-template <typename T> class evt_fiber : public evt<T> {
+template <typename T, typename condition_lock_t = boost::fibers::mutex,
+          typename condition_t = boost::fibers::condition_variable>
+class evt_fiber : public evt<T> {
 public:
-  using value_t = T;
   using fiber_t = boost::fibers::fiber;
-  // fiber_id_t : here N/A for both detached-but-running and invalid fibers
-  using fiber_id_t = boost::fibers::fiber::id;
-  // condition_lock_t: similarly fiber-exclusive and not thread-exclusive
-  using condition_lock_t = boost::fibers::mutex;
-  using condition_t = boost::fibers::condition_variable;
+  using fiber_id_t = fiber_t::id;
+  using value_t = T;
 
 private:
   static void _dealloc_fiber(fiber_t *fiber) {
@@ -70,17 +65,12 @@ private:
   condition_t m_cond;
 
 public:
-
-  evt_fiber(scheduling sched = scheduling::SCHED_DEFER)
+  explicit evt_fiber(scheduling sched = scheduling::SCHED_DEFER)
       : evt<T>(), m_sched(sched), m_state(), m_value(NULLOPT),
         m_fiber(nullptr, _dealloc_fiber) {
     if (static_cast<size_t>(sched) &
         static_cast<size_t>(scheduling::SCHED_IMMED)) {
-      auto opt_fb = ensure_fiber();
-      ASSERT(opt_fb);
-      ASSERT(opt_fb->joinable());
-      opt_fb->detach();
-      ASSERT(!opt_fb->joinable());
+      dispatch_detached();
     }
   };
 
@@ -104,9 +94,17 @@ public:
   virtual T &get() {
 
     m_cv_lock.lock();
+    bool locked = true;
+    SCOPE_FAIL guard{[this, &locked]() {
+      if (locked) {
+        m_cv_lock.unlock();
+        locked = false;
+      }
+    }}; // guard
 
     if (static_cast<bool>(m_value)) {
       m_cv_lock.unlock();
+      locked = false;
       return m_value.value();
     } else {
       DBGMSG("wait_fiber: new");
@@ -131,6 +129,7 @@ public:
         DBGMSG("wait_fiber: returning");
       });
       m_cv_lock.unlock();
+      locked = false;
       wait_fiber.join();
       DBGMSG("wait_fiber: returned");
       return m_value.value();
@@ -141,6 +140,13 @@ public:
     auto *ff = ensure_fiber();
     if (ff && ff->joinable()) {
       ff->join();
+    }
+  }
+
+  virtual void dispatch_detached() {
+    auto *ff = ensure_fiber();
+    if (ff && ff->joinable()) {
+      ff->detach();
     }
   }
 
@@ -171,6 +177,8 @@ public:
   virtual bool fiber_pending() noexcept {
     return static_cast<bool>(m_fiber) && !m_value.has_value();
   }
+
+  virtual bool has_value() noexcept { return m_value.has_value(); }
 
   virtual OPTIONAL_T<bool> get_detached_state() {
     m_cv_lock.lock();
@@ -217,13 +225,11 @@ public:
   }
 
 protected:
-  virtual value_t func() = 0;
-
   virtual void dispatch_func() {
     DBGMSG("dispatch_func: running");
     ASSERT(!m_value.has_value());
-    auto vv = func();
-    cv_lock_acquire();
+    auto vv = this->func();
+    _cv_prelock_acquire();
     m_value.emplace(std::move(vv));
     ASSERT(m_state != evt_state::STATE_DONE);
     m_state.emplace(evt_state::STATE_DONE);
@@ -236,7 +242,19 @@ protected:
     DBGMSG("dispatch_func: returning");
   };
 
-  virtual void cv_lock_acquire() {
+  // protected accessors for subclasses
+  virtual evt_state _get_state() {
+    return m_state.value_or(evt_state::STATE_NONE);
+  }
+  virtual void _set_state(evt_state st) { m_state.emplace(st); }
+
+  virtual void _set_value(T &&value) { m_value.emplace(value); }
+
+  virtual void _acquire_cv_lock() { m_cv_lock.lock(); }
+
+  virtual void _release_cv_lock() { m_cv_lock.unlock(); }
+
+  virtual void _cv_prelock_acquire() {
     // some condition variable implementations will need the
     // condition's lock to be acquired before cond.notify()
     //
@@ -245,6 +263,11 @@ protected:
     // it may be usable in this case, if (perhaps only if)
     // using a _recursive_ fiber mutex for the CV
   }
+  virtual void cv_notify() {
+    m_cond.notify_all();
+  }
+};
+
 };
 
 } // namespace evtlet
