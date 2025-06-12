@@ -7,11 +7,16 @@
 #include <iostream>
 
 #include <evtlet/evt/evt_fiber.hpp>
+#include <evtlet/evt/evt_cc.hpp>
 
+template <typename T>
+// using evt_base = evtlet::evt_fiber<T>;
+using evt_base = evtlet::evt_cc<T>;
 
-template <typename T> class beta_evt : public evtlet::evt_fiber<T> {
+template <typename T> class beta_evt : public evt_base<T> {
 public:
-  using evtlet::evt_fiber<T>::evt_fiber;
+  // using evtlet::evt_fiber<T>::evt_fiber;
+  using evt_base<T>::evt_base;
   void test_state() {
     // test for consistency of fiber_pending() and get_state() monitors (one fiber)
     ASSERT(this->fiber_pending());
