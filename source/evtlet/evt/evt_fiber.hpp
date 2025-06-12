@@ -48,8 +48,6 @@ public:
   using fiber_t = boost::fibers::fiber;
   // fiber_id_t : here N/A for both detached-but-running and invalid fibers
   using fiber_id_t = boost::fibers::fiber::id;
-  // value_lock_t: exclusive only for other fibers within this thread
-  using value_lock_t = boost::fibers::mutex;
   // condition_lock_t: similarly fiber-exclusive and not thread-exclusive
   using condition_lock_t = boost::fibers::mutex;
   using condition_t = boost::fibers::condition_variable;
