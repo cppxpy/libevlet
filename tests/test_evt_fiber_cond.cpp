@@ -9,9 +9,9 @@
 #include <evtlet/evt/evt_fiber.hpp>
 
 
-template <typename T> class beta_evt : public evtlet::evt<T> {
+template <typename T> class beta_evt : public evtlet::evt_fiber<T> {
 public:
-  using evtlet::evt<T>::evt;
+  using evtlet::evt_fiber<T>::evt_fiber;
   void test_state() {
     // test for consistency of fiber_pending() and get_state() monitors (one fiber)
     ASSERT(this->fiber_pending());
@@ -85,7 +85,7 @@ auto main() -> int {
 
   auto sk = new echo_int(5);
   ASSERT(sk->get_state() == evtlet::evt_state::STATE_NONE);
-  // test with dispatch under get()
+  // test with ensure_fiber under get()
   auto vv = sk->get();
   ASSERT(!sk->fiber_pending());
   ASSERT(sk->get_state() == evtlet::evt_state::STATE_DONE);
@@ -94,23 +94,23 @@ auto main() -> int {
     std::cerr << "OK: ";
     std::cerr << vv;
     std::cerr << std::endl;
-    // test for second dispatch()
+    // test for second ensure_fiber()
     ASSERT(vv == sk->get());
     ASSERT(!sk->fiber_pending());
     ASSERT(sk->get_state() == evtlet::evt_state::STATE_DONE);
     delete (sk);
 
-    DBGMSG("test immediate evt");
+    DBGMSG("test immediate evt_fiber");
     auto isk = new echo_int(-5, true);
     ASSERT(isk->get_state() != evtlet::evt_state::STATE_NONE);
     ASSERT(isk->get() == -5);
 
-    DBGMSG("test void evt");
+    DBGMSG("test void evt_fiber");
 
-    // test with dispatch() before get()
+    // test with ensure_fiber() before get()
     auto vsk = new sk_void();
     ASSERT(vsk->get_state() == evtlet::evt_state::STATE_NONE);
-    auto vdf = vsk->dispatch();
+    auto vdf = vsk->ensure_fiber();
     ASSERT(vdf);
     vdf->join();
     auto vvsk = vsk->get();

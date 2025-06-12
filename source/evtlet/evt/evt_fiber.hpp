@@ -20,11 +20,14 @@
 #include <boost/fiber/future/future.hpp>
 #include <boost/fiber/mutex.hpp>
 
+#include <evtlet/evt/evt.hpp>
+#include <evtlet/util/dbg.hpp>
 #include <evtlet/util/optional_source.hpp>
 #include <evtlet/util/scope_source.hpp>
-#include <evtlet/util/dbg.hpp>
 
 namespace evtlet {
+
+enum class scheduling : size_t { SCHED_DEFER = 0, SCHED_IMMED = 1 };
 
 enum class evt_state : size_t {
   STATE_NONE = 0,
@@ -34,15 +37,12 @@ enum class evt_state : size_t {
   STATE_PENDING_DETACHED = STATE_PENDING | STATE_DETACHED
 };
 
-enum class scheduling : size_t { SCHED_DEFER = 0, SCHED_IMMED = 1 };
-
-
 /**
  * @brief prototype for an Event-oriented API onto boost fibers
  *
  * @tparam T return value type for the event function
  */
-template <typename T> class evt {
+template <typename T> class evt_fiber : public evt<T> {
 public:
   using value_t = T;
   using fiber_t = boost::fibers::fiber;
@@ -72,12 +72,13 @@ private:
   condition_t m_cond;
 
 public:
-  evt(scheduling sched = scheduling::SCHED_DEFER)
-      : m_sched(sched), m_state(), m_value(NULLOPT),
+
+  evt_fiber(scheduling sched = scheduling::SCHED_DEFER)
+      : evt<T>(), m_sched(sched), m_state(), m_value(NULLOPT),
         m_fiber(nullptr, _dealloc_fiber) {
     if (static_cast<size_t>(sched) &
         static_cast<size_t>(scheduling::SCHED_IMMED)) {
-      auto opt_fb = dispatch();
+      auto opt_fb = ensure_fiber();
       ASSERT(opt_fb);
       ASSERT(opt_fb->joinable());
       opt_fb->detach();
@@ -85,13 +86,7 @@ public:
     }
   };
 
-  /// no copy
-  evt(evt const &) = delete;
-
-  /// no assign
-  evt &operator=(evt const &) = delete;
-
-  virtual ~evt() {
+  virtual ~evt_fiber() {
     if (m_fiber && m_fiber->joinable()) {
       m_fiber->detach();
     }
@@ -120,10 +115,10 @@ public:
       boost::fibers::fiber wait_fiber([this]() {
         DBGMSG("wait_fiber: initialized");
         if (!static_cast<bool>(m_state)) {
-          auto df = dispatch();
+          auto df = ensure_fiber();
           ASSERT(df);
           if (df->joinable()) {
-            DBGMSG("wait_fiber: yield to dispatch fiber");
+            DBGMSG("wait_fiber: yield to ensure_fiber fiber");
             // if m_fiber was reset after call, this could be reached
             // i.e it might still appear joinable() but the join() may
             // segfault then
@@ -144,7 +139,14 @@ public:
     }
   };
 
-  virtual fiber_t *dispatch() {
+  virtual void dispatch() {
+    auto *ff = ensure_fiber();
+    if (ff && ff->joinable()) {
+      ff->join();
+    }
+  }
+
+  virtual fiber_t *ensure_fiber() {
     // if m_fiber is null, then create a new fiber and store in m_fiber
     m_cv_lock.lock();
     bool locked = true;
@@ -156,8 +158,9 @@ public:
     }}; // guard
     if (!m_fiber) {
       m_state.emplace(evt_state::STATE_PENDING);
-      DBGMSG("dispatch fiber: new");
-      fiber_t *disp = new fiber_t(std::bind(&evt<T>::dispatch_func, this));
+      DBGMSG("ensure_fiber fiber: new");
+      fiber_t *disp =
+          new fiber_t(std::bind(&evt_fiber<T>::dispatch_func, this));
       m_fiber.reset(std::move(disp));
     };
     m_cv_lock.unlock();
