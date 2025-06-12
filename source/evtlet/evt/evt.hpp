@@ -20,6 +20,9 @@ public:
   virtual T &get() = 0;
   virtual bool done() noexcept = 0;
 
+protected:
+  virtual T func() = 0;
+
 };
 
 } // namespace evtlet
