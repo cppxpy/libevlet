@@ -75,12 +75,9 @@ public:
 
   virtual void wait() {
     std::unique_lock<condition_lock_t> cv_lck(m_cv_lock);
-    DBGMSG("in wait ...");
     while (!static_cast<bool>(m_value)) {
       m_cond.wait(cv_lck);
-      DBGMSG("... returning from wait");
     }
-    DBGMSG("... end of wait");
   };
 
   virtual T &get() {
@@ -99,31 +96,22 @@ public:
       locked = false;
       return m_value.value();
     } else {
-      DBGMSG("wait_fiber: new");
       boost::fibers::fiber wait_fiber([this]() {
-        DBGMSG("wait_fiber: initialized");
         if (!static_cast<bool>(m_state)) {
           auto df = ensure_fiber();
           ASSERT(df);
           if (df->joinable()) {
-            DBGMSG("wait_fiber: yield to ensure_fiber fiber");
             // if m_fiber was reset after call, this could be reached
             // i.e it might still appear joinable() but the join() may
             // segfault then
             df->join();
-            DBGMSG("wait_fiber: dispatched");
-          } else {
-            DBGMSG("wait_fiber: already disapatching!");
           }
         };
-        DBGMSG("wait_fiber: wait");
         wait();
-        DBGMSG("wait_fiber: returning");
       });
       m_cv_lock.unlock();
       locked = false;
       wait_fiber.join();
-      DBGMSG("wait_fiber: returned");
       return m_value.value();
     }
   };
@@ -152,9 +140,12 @@ public:
         locked = false;
       }
     }}; // guard
-    if (!m_fiber) {
+    if (m_value.has_value()) {
+      m_cv_lock.unlock();
+      locked = false;
+      return nullptr;
+    } else if (!m_fiber) {
       m_state.emplace(evt_state::STATE_PENDING);
-      DBGMSG("ensure_fiber fiber: new");
       fiber_t *disp =
           new fiber_t(std::bind(&evt_fiber<T>::dispatch_func, this));
       m_fiber.reset(std::move(disp));
@@ -204,16 +195,12 @@ public:
   virtual evt_state get_state() {
     m_cv_lock.lock();
     SCOPE_EXIT guard{[this]() { m_cv_lock.unlock(); }};
-    return static_cast<bool>(m_fiber)
-               ? (m_value.has_value()
-                      // has a fiber and value
-                      ? evt_state::STATE_DONE
-                      // has a fiber, no value
-                      : (static_cast<bool>(m_fiber->get_id())
-                             ? evt_state::STATE_PENDING
-                             : evt_state::STATE_PENDING_DETACHED))
-               // has no fiber at this time
-               : evt_state::STATE_NONE;
+    return m_value.has_value() ? evt_state::STATE_DONE
+                               : (static_cast<bool>(m_fiber)
+                                      ? static_cast<bool>(m_fiber->get_id())
+                                            ? evt_state::STATE_PENDING
+                                            : evt_state::STATE_PENDING_DETACHED
+                                      : evt_state::STATE_NONE);
   }
 
 protected:
@@ -226,7 +213,6 @@ protected:
   }
 
   virtual void dispatch_func() {
-    DBGMSG("dispatch_func: running");
     ASSERT(!m_value.has_value());
     auto vv = this->func();
     _cv_prelock_acquire();
@@ -238,8 +224,8 @@ protected:
       // detach the fiber before potential deletion
       m_fiber->detach();
     };
+    m_fiber.release();
     m_cond.notify_all();
-    DBGMSG("dispatch_func: returning");
   };
 
   // protected accessors for subclasses
