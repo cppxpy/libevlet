@@ -150,6 +150,7 @@ add_subdirectory(source)
 
 if(BUILD_TESTS)
   # preload for include(Catch)
+  include(CTest)
   find_package(Catch2 QUIET)
   add_subdirectory(tests)
 endif()

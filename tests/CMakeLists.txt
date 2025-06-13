@@ -3,10 +3,26 @@ include_directories(${PROJECT_SOURCE_DIR}/source)
 
 include(Catch)
 
-add_executable(test_evt_fiber_cond "test_evt_fiber_cond.cpp")
+#
+# interactive tests
+#
 
 add_executable(test_evt_cc "test_evt_cc.cpp")
 
+#
+# unit tests
+#
+
+add_executable(unit_test_evt_fiber "unit_test_evt_fiber.cpp")
+target_link_libraries(unit_test_evt_fiber PRIVATE Catch2::Catch2WithMain)
+
+# be sure to call include(CTest) before adding this dir
+# in the parent CMakeLists.txt
+catch_discover_tests(unit_test_evt_fiber)
+
+#
+# includes, linking
+#
 
 get_directory_property(_DIR_TARGETS BUILDSYSTEM_TARGETS)
 

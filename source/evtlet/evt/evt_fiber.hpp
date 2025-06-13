@@ -48,14 +48,6 @@ public:
   using value_t = T;
 
 private:
-  static void _dealloc_fiber(fiber_t *fiber) {
-    // deleter function for the m_fiber pointer
-    if (fiber->joinable()) {
-      fiber->detach();
-    }
-    delete fiber;
-  }
-
   const scheduling m_sched;
   OPTIONAL_T<evt_state> m_state;
   OPTIONAL_T<value_t> m_value;
@@ -225,6 +217,14 @@ public:
   }
 
 protected:
+  static void _dealloc_fiber(fiber_t *fiber) {
+    // deleter function for the m_fiber pointer
+    if (fiber->joinable()) {
+      fiber->detach();
+    }
+    delete fiber;
+  }
+
   virtual void dispatch_func() {
     DBGMSG("dispatch_func: running");
     ASSERT(!m_value.has_value());
@@ -263,6 +263,7 @@ protected:
     // it may be usable in this case, if (perhaps only if)
     // using a _recursive_ fiber mutex for the CV
   }
+
   virtual void cv_notify() {
     m_cond.notify_all();
   }
