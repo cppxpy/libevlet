@@ -13,6 +13,9 @@ add_executable(test_evt_cc "test_evt_cc.cpp")
 # unit tests
 #
 
+add_executable(test_util_mask "test_util_mask.cpp")
+target_link_libraries(test_util_mask PRIVATE Catch2::Catch2WithMain)
+
 add_executable(unit_test_evt_fiber "unit_test_evt_fiber.cpp")
 target_link_libraries(unit_test_evt_fiber PRIVATE Catch2::Catch2WithMain)
 
