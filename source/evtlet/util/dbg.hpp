@@ -23,17 +23,10 @@ void __dbg_out(Arg &&arg, Args &&...args) {
 #endif
 #endif
 
-#ifdef ASSERT_LIBASSERT
-#include "libassert/assert.hpp"
-#else
+#ifndef BOOST_ASSERT
 #include <boost/assert.hpp>
+#endif
+
 #ifndef ASSERT
-#define ASSERT(expr, ...) BOOST_ASSERT(expr)
-#endif
-#ifndef DEBUG_ASSERT
-#define DEBUG_ASSERT(expr, ...) BOOST_ASSERT(expr)
-#endif
-#ifndef ASSUME
-#define ASSUME(expr, ...) BOOST_ASSERT(expr)
-#endif
+#define ASSERT BOOST_ASSERT
 #endif
