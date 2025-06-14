@@ -34,8 +34,6 @@ foreach(_TGT ${_DIR_TARGETS})
     ${Boost_INCLUDE_DIRS}
   )
   target_link_libraries(${_TGT} PRIVATE Boost::fiber)
-  ## use Catch2 REQUIRE in place of BOOST_ASSERT
-  target_compile_definitions(${_TGT} PRIVATE BOOST_ASSERT=REQUIRE)
 
   if(USE_BEMAN_OPTIONAL)
     target_include_directories(${_TGT} PRIVATE ${optional_INCLUDE_DIRS})
