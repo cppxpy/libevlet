@@ -4,7 +4,10 @@
 // #define CATCH_CONFIG_MAIN // ?
 
 #include <catch2/catch_test_macros.hpp>
-#include <catch2/matchers/catch_matchers.hpp> // REQUIRE_THAT
+#ifdef BOOST_ASSERT
+#undef BOOST_ASSERT
+#endif
+#define BOOST_ASSERT REQUIRE
 
 #include <evtlet/evt/evt_cc.hpp>
 #include <evtlet/evt/evt_fiber.hpp>
