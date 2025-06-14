@@ -1,11 +1,6 @@
 
 #include <catch2/catch_test_macros.hpp>
 
-#ifdef BOOST_ASSERT
-#undef BOOST_ASSERT
-#endif
-#define BOOST_ASSERT REQUIRE
-
 #include <evtlet/util/mask.hpp>
 
 DEFMASK_T(state_t, size_t, ST_NEVER = 0, ST_NOW = 1, ST_DONE = 2);
